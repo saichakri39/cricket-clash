@@ -1,0 +1,6 @@
+{
+  "name": "CRICKET CLASH",
+  "description": "Authentic Hand Cricket game with real-time online multiplayer rooms and intelligent computer AI. Your Match. Your Rules.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
