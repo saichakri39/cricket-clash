@@ -10,7 +10,7 @@ interface PlayerSetupScreenProps {
   initialRoomCode?: string;
   onBack: () => void;
   onSubmitVsComputer: (playerName: string, difficulty: AIDifficulty, bot: BotProfile, avatarSeed: number) => void;
-  onSubmitCreateRoom: (playerName: string, avatarSeed: number) => void;
+  onSubmitCreateRoom: (playerName: string, avatarSeed: number, format?: '1v1' | '2v2') => void;
   onSubmitJoinRoom: (playerName: string, roomCode: string, avatarSeed: number) => void;
 }
 
@@ -36,6 +36,7 @@ export const PlayerSetupScreen: React.FC<PlayerSetupScreenProps> = ({
   const [multiplayerAction, setMultiplayerAction] = useState<'create' | 'join'>(
     initialRoomCode ? 'join' : 'create'
   );
+  const [selectedFormat, setSelectedFormat] = useState<'1v1' | '2v2'>('1v1');
   const [roomCodeInput, setRoomCodeInput] = useState(initialRoomCode);
   const [roomError, setRoomError] = useState('');
 
@@ -79,7 +80,7 @@ export const PlayerSetupScreen: React.FC<PlayerSetupScreenProps> = ({
       onSubmitVsComputer(trimmed, difficulty, selectedBot, avatarSeed);
     } else {
       if (multiplayerAction === 'create') {
-        onSubmitCreateRoom(trimmed, avatarSeed);
+        onSubmitCreateRoom(trimmed, avatarSeed, selectedFormat);
       } else {
         const cleanCode = roomCodeInput.trim().toUpperCase();
         if (!cleanCode || cleanCode.length < 4) {
@@ -270,6 +271,58 @@ export const PlayerSetupScreen: React.FC<PlayerSetupScreenProps> = ({
                   Join with Code
                 </button>
               </div>
+
+              {multiplayerAction === 'create' && (
+                <div className="p-4 rounded-xl bg-white/[0.03] border border-white/10 space-y-3">
+                  <div className="flex items-center justify-between">
+                    <label className="block text-xs font-bold uppercase tracking-wider text-slate-300">
+                      MATCH FORMAT
+                    </label>
+                    <span className="text-[11px] font-mono text-lime-400 font-bold">
+                      {selectedFormat === '2v2' ? '4 PLAYERS (2 TEAMS)' : '2 PLAYERS (HEAD TO HEAD)'}
+                    </span>
+                  </div>
+                  <div className="grid grid-cols-2 gap-3">
+                    <button
+                      type="button"
+                      onClick={() => {
+                        soundManager.playClick();
+                        setSelectedFormat('1v1');
+                      }}
+                      className={`p-3 rounded-xl border text-left transition-all cursor-pointer ${
+                        selectedFormat === '1v1'
+                          ? 'bg-lime-500/20 border-lime-400 text-white shadow-lg shadow-lime-500/20'
+                          : 'bg-slate-900/60 border-white/10 text-slate-300 hover:border-white/20'
+                      }`}
+                    >
+                      <div className="font-heading font-black text-sm text-white flex items-center justify-between">
+                        <span>1v1 Head-to-Head</span>
+                        {selectedFormat === '1v1' && <Check className="w-3.5 h-3.5 text-lime-400 stroke-[3]" />}
+                      </div>
+                      <p className="text-[11px] text-slate-400 mt-0.5">Classic duel (2 players)</p>
+                    </button>
+
+                    <button
+                      type="button"
+                      onClick={() => {
+                        soundManager.playClick();
+                        setSelectedFormat('2v2');
+                      }}
+                      className={`p-3 rounded-xl border text-left transition-all cursor-pointer ${
+                        selectedFormat === '2v2'
+                          ? 'bg-cyan-500/20 border-cyan-400 text-white shadow-lg shadow-cyan-500/20'
+                          : 'bg-slate-900/60 border-white/10 text-slate-300 hover:border-white/20'
+                      }`}
+                    >
+                      <div className="font-heading font-black text-sm text-white flex items-center justify-between">
+                        <span>2v2 Team Clash</span>
+                        {selectedFormat === '2v2' && <Check className="w-3.5 h-3.5 text-cyan-400 stroke-[3]" />}
+                      </div>
+                      <p className="text-[11px] text-slate-400 mt-0.5">4 players in 2 squads</p>
+                    </button>
+                  </div>
+                </div>
+              )}
 
               {multiplayerAction === 'join' && (
                 <div className="p-4 rounded-xl bg-white/[0.03] border border-white/10 space-y-2">
